@@ -1,60 +1,27 @@
-pipeline {
-//   environment {
-//     registry = "tyitzhak/spring-petclinic-hub"
-//     registryCredential = 'docker-hub'
-//     dockerImage = ''
-//   }
-  agent any
-//   tools {
-//     maven 'Maven 3.3.9'
-//     jdk 'jdk8'
-//   } 
-  stages {
-    stage('Cloning Git') {
-      steps {
-        git 'https://github.com/alexwang19/spring-petclinic-demo.git'
-      }
+node {
+    def WORKSPACE = "/var/lib/jenkins/workspace/springboot-deploy"
+    def dockerImageTag = "springboot-deploy${env.BUILD_NUMBER}"
+try{
+    notifyBuild('STARTED')
+    stage('Clone Repo') {
+        // for display purposes
+        // Get some code from a GitHub repository
+        git url: 'https://gitlab.com/gpranataAsyst/springboot-demodeploy.git',
+            credentialsId: 'springdeploy-user',
+            branch: 'main'
+     }
+    stage('Build docker') {
+         dockerImage = docker.build("springboot-deploy:${env.BUILD_NUMBER}")
     }
-    stage('Compile') {
-       steps {
-         sh '''
-         cd ..
-         cd spring-petclinic
-         ls -altr
-         mvn compile
-         ''' //only compilation of the code
-       }
+    stage('Deploy docker'){
+          echo "Docker Image Tag Name: ${dockerImageTag}"
+          sh "docker stop springboot-deploy || true && docker rm springboot-deploy || true"
+          sh "docker run --name springboot-deploy -d -p 8081:8081 springboot-deploy:${env.BUILD_NUMBER}"
     }
-    stage('Test') {
-      steps {
-        sh '''
-        mvn clean package
-        ls
-        pwd
-        ''' 
-        //if the code is compiled, we test and package it in its distributable format; run IT and store in local repository
-      }
-    }
-//     stage('Building Image') {
-//       steps{
-//         script {
-//           dockerImage = docker.build registry + ":latest"
-//         }
-//       }
-//     }
-//     stage('Deploy Image') {
-//       steps{
-//          script {
-//             docker.withRegistry( '', registryCredential ) {
-//             dockerImage.push()
-//           }
-//         }
-//       }
-//     }
-//     stage('Remove Unused docker image') {
-//       steps{
-//         sh "docker rmi $registry:latest"
-//       }
-//     }
-  }
+}catch(e){
+    currentBuild.result = "FAILED"
+    throw e
+}finally{
+    notifyBuild(currentBuild.result)
+ }
 }
