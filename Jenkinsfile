@@ -20,8 +20,7 @@ pipeline {
          sh '''
          ls -altr
          mvn compile
-         ;;;
-         //only compilation of the code
+         ''' //only compilation of the code
        }
     }
     stage('Test') {
