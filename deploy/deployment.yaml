@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-petclinic
+  namespace: demo-apps
+  labels:
+    app: spring-petclinic-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-petclinic-app
+  template:
+    metadata:
+      labels:
+        app: spring-petclinic-app
+    spec:
+      containers:
+      - name: spring-petclinic-app-container
+        image: public.ecr.aws/k2v0b9e1/demo:nginx
+        imagePullPolicy: Always
+        ports:
+          - name: web
+            containerPort: 8080
