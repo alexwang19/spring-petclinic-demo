@@ -18,6 +18,7 @@ pipeline {
     stage('Compile') {
        steps {
          sh '''
+         cd ..
          ls -altr
          mvn compile
          ''' //only compilation of the code
