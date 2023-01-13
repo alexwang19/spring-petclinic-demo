@@ -17,7 +17,11 @@ pipeline {
     }
     stage('Compile') {
        steps {
-         sh 'mvn compile' //only compilation of the code
+         sh '''
+         ls -altr
+         mvn compile
+         ;;;
+         //only compilation of the code
        }
     }
     stage('Test') {
