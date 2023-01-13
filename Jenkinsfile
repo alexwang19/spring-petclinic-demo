@@ -19,6 +19,7 @@ pipeline {
        steps {
          sh '''
          cd ..
+         cd spring-petclinic
          ls -altr
          mvn compile
          ''' //only compilation of the code
