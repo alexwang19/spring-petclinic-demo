@@ -17,13 +17,13 @@ pipeline {
     }
     stage('Compile') {
        steps {
-         sh './mvn compile' //only compilation of the code
+         sh 'mvn compile' //only compilation of the code
        }
     }
     stage('Test') {
       steps {
         sh '''
-        ./mvn clean package
+        mvn clean package
         ls
         pwd
         ''' 
